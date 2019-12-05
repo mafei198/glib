@@ -27,10 +27,13 @@ import (
 	"fmt"
 	"github.com/mafei198/gutils/logger"
 	"net"
+	"os"
+	"os/signal"
 	"reflect"
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"syscall"
 )
 
 func StructToStr(ins interface{}) string {
@@ -90,4 +93,11 @@ func GetType(msg interface{}) string {
 	} else {
 		return t.Name()
 	}
+}
+
+func WaitForStopSignal(cb func()) {
+	stopChan := make(chan os.Signal)
+	signal.Notify(stopChan, syscall.SIGINT, syscall.SIGTERM)
+	<-stopChan // wait for SIGINT or SIGTERM
+	cb()
 }
