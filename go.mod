@@ -1,3 +1,3 @@
-module github.com/mafei198/packet
+module github.com/mafei198/gutils
 
 go 1.13
