@@ -25,7 +25,7 @@ package misc
 
 import (
 	"fmt"
-	"github.com/mafei198/gutils/logger"
+	"github.com/mafei198/goslib/logger"
 	"net"
 	"os"
 	"os/signal"
@@ -100,4 +100,11 @@ func WaitForStopSignal(cb func()) {
 	signal.Notify(stopChan, syscall.SIGINT, syscall.SIGTERM)
 	<-stopChan // wait for SIGINT or SIGTERM
 	cb()
+}
+
+func MaxInt64(a, b int64) int64 {
+	if a > b {
+		return a
+	}
+	return b
 }
