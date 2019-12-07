@@ -103,7 +103,7 @@ func SetTimeout(value time.Duration) {
 	timeout = value
 }
 
-func GetTimeout(value time.Duration) time.Duration {
+func GetTimeout() time.Duration {
 	return timeout
 }
 
