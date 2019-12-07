@@ -103,6 +103,10 @@ func SetTimeout(value time.Duration) {
 	timeout = value
 }
 
+func GetTimeout(value time.Duration) time.Duration {
+	return timeout
+}
+
 func SetGenServer(name string, instance *GenServer) {
 	ServerRegisterMap.Store(name, instance)
 }
