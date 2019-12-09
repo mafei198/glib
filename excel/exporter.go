@@ -83,7 +83,7 @@ func CreateMergeJSON(jsonPath, writePath string, isGzip bool) error {
 		return err
 	}
 	if isGzip {
-		if data, err = misc.GZip(data); err != nil {
+		if data, err = misc.Gzip(data); err != nil {
 			return err
 		}
 	}
