@@ -38,9 +38,9 @@ const MsgChannelLen = 1024
 var ServerRegisterMap = sync.Map{}
 
 const (
-	CALL        byte = 0
-	CAST        byte = 1
-	MANUAL_CALL byte = 2 // need manual response
+	CALL  byte = 0
+	CAST  byte = 1
+	MCall byte = 2 // need manual response
 )
 
 type Packet struct {
@@ -178,7 +178,7 @@ func Call(serverName string, msg interface{}, options ...*Option) (interface{}, 
 }
 
 func ManualCall(serverName string, msg interface{}) (interface{}, error) {
-	return callByCategory(MANUAL_CALL, serverName, msg)
+	return callByCategory(MCall, serverName, msg)
 }
 
 var ErrNotExist = errors.New("gen_server not exists")
@@ -205,7 +205,7 @@ func (s *GenServer) Call(msg interface{}, options ...*Option) (interface{}, erro
 }
 
 func (s *GenServer) ManualCall(msg interface{}, options ...*Option) (interface{}, error) {
-	return s.callByCategory(MANUAL_CALL, msg, options...)
+	return s.callByCategory(MCall, msg, options...)
 }
 
 func (s *GenServer) callByCategory(category byte, msg interface{}, options ...*Option) (interface{}, error) {
@@ -246,13 +246,13 @@ func (s *GenServer) Cast(msg interface{}) error {
 }
 
 func (s *GenServer) Stop(reason string) error {
-	response_channel := make(chan *Response)
+	responseChannel := make(chan *Response)
 	s.signChannel <- &SignPacket{
 		signal:          SignStop,
 		reason:          reason,
-		responseChannel: response_channel,
+		responseChannel: responseChannel,
 	}
-	response := <-response_channel
+	response := <-responseChannel
 	return response.err
 }
 
@@ -319,7 +319,7 @@ func handleRequest(genServer *GenServer, req *Request) {
 		genServer.callback.HandleCast(req)
 		putRequest(req)
 		break
-	case MANUAL_CALL:
+	case MCall:
 		_, _ = genServer.callback.HandleCall(req)
 		break
 	}
