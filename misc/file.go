@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func GetAllFiles(path, extension string, cb func(string) error) error {
@@ -12,6 +13,9 @@ func GetAllFiles(path, extension string, cb func(string) error) error {
 		return err
 	}
 	for _, file := range files {
+		if strings.HasPrefix(filepath.Base(file.Name()), ".") {
+			continue
+		}
 		if file.IsDir() {
 			if err := GetAllFiles(path+"/"+file.Name(), extension, cb); err != nil {
 				return err
@@ -45,6 +49,9 @@ func ReadAllFiles(path string, cb func(string, []byte) error) error {
 		return err
 	}
 	for _, file := range files {
+		if strings.HasPrefix(filepath.Base(file.Name()), ".") {
+			continue
+		}
 		if file.IsDir() {
 			if err := ReadAllFiles(path+"/"+file.Name(), cb); err != nil {
 				return err
