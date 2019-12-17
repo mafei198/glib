@@ -25,8 +25,8 @@ package pool
 
 import (
 	"container/list"
-	"github.com/mafei198/goslib/gen_server"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/gen_server"
+	"github.com/mafei198/glib/logger"
 )
 
 type Pool struct {

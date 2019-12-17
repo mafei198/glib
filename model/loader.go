@@ -25,8 +25,8 @@ package model
 
 import (
 	"context"
-	"github.com/mafei198/goslib/logger"
-	"github.com/mafei198/goslib/misc"
+	"github.com/mafei198/glib/logger"
+	"github.com/mafei198/glib/misc"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"

@@ -24,8 +24,8 @@ THE SOFTWARE.
 package pool
 
 import (
-	"github.com/mafei198/goslib/gen_server"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/gen_server"
+	"github.com/mafei198/glib/logger"
 )
 
 func NewWorker(manager *Pool, idx int, handler TaskHandler) (*Worker, error) {

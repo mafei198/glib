@@ -25,7 +25,7 @@ package misc
 
 import (
 	"fmt"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/logger"
 	"net"
 	"os"
 	"os/signal"

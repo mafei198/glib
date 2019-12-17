@@ -27,7 +27,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"github.com/mafei198/goslib/packet"
+	"github.com/mafei198/glib/packet"
 	"reflect"
 )
 

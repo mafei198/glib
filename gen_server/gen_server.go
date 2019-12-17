@@ -26,8 +26,8 @@ package gen_server
 import (
 	"errors"
 	"fmt"
-	"github.com/mafei198/goslib/logger"
-	"github.com/mafei198/goslib/misc"
+	"github.com/mafei198/glib/logger"
+	"github.com/mafei198/glib/misc"
 	"sync"
 	"time"
 )

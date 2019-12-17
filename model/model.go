@@ -25,7 +25,7 @@ package model
 
 import (
 	"errors"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

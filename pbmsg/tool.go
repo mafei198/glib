@@ -2,7 +2,7 @@ package pbmsg
 
 import (
 	"fmt"
-	"github.com/mafei198/goslib/misc"
+	"github.com/mafei198/glib/misc"
 	"io/ioutil"
 	"regexp"
 	"strings"
@@ -28,7 +28,7 @@ func genRegister(pkg, outfile string, messages []string) error {
 	content := "package " + pkg + "\n\n"
 	content += `import (
 	"github.com/golang/protobuf/proto"
-	"github.com/mafei198/goslib/pbmsg"
+	"github.com/mafei198/glib/pbmsg"
 )`
 	content += "\n\nfunc init() {\n"
 	for _, message := range messages {

@@ -3,7 +3,7 @@ package excel
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
-	"github.com/mafei198/goslib/misc"
+	"github.com/mafei198/glib/misc"
 	"github.com/tealeg/xlsx"
 	"github.com/tidwall/pretty"
 	"regexp"
@@ -365,7 +365,7 @@ func (e *ExcelToGo) parseRecord(fieldNames, fieldTypes, values []string) string 
 
 func (e *ExcelToGo) parseJsonKV(fieldName, fieldType, value string) string {
 	jsonValue := e.parseJsonValue(fieldType, value)
-	return fmt.Sprintf("\"%s\": %s", fieldName, jsonValue)
+	return fmt.Sprintf("\"%s\": %s", strcase.ToSnake(fieldName), jsonValue)
 }
 
 func (e *ExcelToGo) parseJsonValue(fieldType string, value string) string {

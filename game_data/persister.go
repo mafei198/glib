@@ -25,8 +25,8 @@ package player
 
 import (
 	"context"
-	"github.com/mafei198/goslib/gen_server"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/gen_server"
+	"github.com/mafei198/glib/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"

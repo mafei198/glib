@@ -24,7 +24,7 @@ THE SOFTWARE.
 package gnet
 
 import (
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/logger"
 	"net"
 	"strconv"
 )

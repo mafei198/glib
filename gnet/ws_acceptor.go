@@ -25,7 +25,7 @@ package gnet
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/logger"
 	"net"
 	"net/http"
 	"strconv"

@@ -25,7 +25,7 @@ THE SOFTWARE.
 package broadcast
 
 import (
-	"github.com/mafei198/goslib/gen_server"
+	"github.com/mafei198/glib/gen_server"
 )
 
 const SERVER = "__broadcast_mgr_server__"

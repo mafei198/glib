@@ -25,7 +25,7 @@ THE SOFTWARE.
 package gnet
 
 import (
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/logger"
 	"time"
 )
 
@@ -65,11 +65,11 @@ type Acceptor interface {
 	Start(port string, factory HandlerFactory) error
 }
 
-const(
+const (
 	ProtocolTCP = "tcp"
-	ProtocolWS = "ws"
+	ProtocolWS  = "ws"
 
-	Packet = 4
+	Packet      = 4
 	ReadTimeout = 60 * time.Second
 )
 

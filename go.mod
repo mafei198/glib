@@ -1,4 +1,4 @@
-module github.com/mafei198/goslib
+module github.com/mafei198/glib
 
 go 1.13
 

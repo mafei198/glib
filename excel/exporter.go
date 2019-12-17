@@ -2,8 +2,8 @@ package excel
 
 import (
 	"encoding/json"
-	"github.com/mafei198/goslib/excel/tpls"
-	"github.com/mafei198/goslib/misc"
+	"github.com/mafei198/glib/excel/tpls"
+	"github.com/mafei198/glib/misc"
 	"github.com/tidwall/pretty"
 	"io/ioutil"
 	"os"

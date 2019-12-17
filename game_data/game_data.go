@@ -26,7 +26,7 @@ package player
 import (
 	"context"
 	"github.com/go-redis/redis"
-	"github.com/mafei198/goslib/logger"
+	"github.com/mafei198/glib/logger"
 	"github.com/rs/xid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

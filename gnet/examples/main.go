@@ -24,9 +24,9 @@ THE SOFTWARE.
 package main
 
 import (
-	"github.com/mafei198/goslib/gnet"
-	"github.com/mafei198/goslib/logger"
-	"github.com/mafei198/goslib/misc"
+	"github.com/mafei198/glib/gnet"
+	"github.com/mafei198/glib/logger"
+	"github.com/mafei198/glib/misc"
 	"github.com/rs/xid"
 )
 
