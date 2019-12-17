@@ -186,7 +186,7 @@ func (e *ExcelToGo) genStruct(fieldNames, fieldTypes []string) string {
 	for i := 0; i < len(fieldNames); i++ {
 		fieldName := fieldNames[i]
 		fieldType := e.typeToDefine(fieldTypes[i])
-		tag := " `json:\"" + fieldName + "\"`"
+		tag := " `json:\"" + strcase.ToSnake(fieldName) + "\"`"
 		st += "    " + strcase.ToCamel(fieldName) + " " + fieldType + tag + "\n"
 	}
 	st += "}"
@@ -365,7 +365,7 @@ func (e *ExcelToGo) parseRecord(fieldNames, fieldTypes, values []string) string 
 
 func (e *ExcelToGo) parseJsonKV(fieldName, fieldType, value string) string {
 	jsonValue := e.parseJsonValue(fieldType, value)
-	return fmt.Sprintf("\"%s\": %s", fieldName, jsonValue)
+	return fmt.Sprintf("\"%s\": %s", strcase.ToSnake(fieldName), jsonValue)
 }
 
 func (e *ExcelToGo) parseJsonValue(fieldType string, value string) string {
