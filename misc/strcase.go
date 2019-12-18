@@ -75,6 +75,8 @@ func toProperCase(str string) string {
 	str = wordExp.ReplaceAllStringFunc(str, func(frag string) string {
 		if _, ok := commonInitialisms[strings.ToUpper(frag)]; ok {
 			return strings.ToUpper(frag)
+		} else if len(frag) == 1 {
+			return strings.ToUpper(frag)
 		} else {
 			return strings.ToUpper(frag[0:1]) + strings.ToLower(frag[1:len(frag)-1])
 		}
