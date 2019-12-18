@@ -142,8 +142,7 @@ func (e *ExcelToGo) parseNormalSheet(sheet *xlsx.Sheet) *SheetObject {
 	typeRow := sheet.Rows[RowType]
 	nameRow := sheet.Rows[RowName]
 	signRow := sheet.Rows[RowExportSign]
-	parts := strings.Split(sheet.Name, "|")
-	structName := misc.ToCamel(parts[len(parts)-1])
+	structName := e.GetStructName(sheet)
 	fieldNames := make([]string, 0)
 	fieldTypes := make([]string, 0)
 	for i := 0; i < len(typeRow.Cells); i++ {
@@ -440,5 +439,5 @@ func (e *ExcelToGo) isObject(fieldType string) bool {
 func (e *ExcelToGo) GetStructName(sheet *xlsx.Sheet) string {
 	parts := strings.Split(sheet.Name, "|")
 	structName := misc.ToCamel(parts[len(parts)-1])
-	return structName
+	return structName + "s"
 }
