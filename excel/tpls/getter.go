@@ -1,7 +1,8 @@
 package tpls
 
 import (
-	"github.com/iancoleman/strcase"
+	"github.com/mafei198/glib/misc"
+	"regexp"
 	"strings"
 )
 
@@ -48,10 +49,17 @@ func (c *{ContainerName}) GetList() []*{StructName} {
 	return c.list
 }`
 
-func GenConfigFile(packageName, structName, structDefine, keyType string) string {
+var keyExp = regexp.MustCompile(" ID [a-z0-9]+ ")
+
+func GenConfigFile(packageName, structName, structDefine string) string {
+	sub := keyExp.FindString(structDefine)
+	if sub == "" {
+		panic("config structure invalid: " + structDefine)
+	}
+	keyType := strings.Split(sub, " ")[1]
 	args := []string{
 		"{Package}", packageName,
-		"{ContainerName}", strcase.ToLowerCamel(structName),
+		"{ContainerName}", misc.ToLowerCamel(structName),
 		"{InstanceName}", strings.TrimPrefix(structName, "Config"),
 		"{StructName}", structName,
 		"{KeyType}", keyType,

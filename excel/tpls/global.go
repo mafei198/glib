@@ -1,7 +1,7 @@
 package tpls
 
 import (
-	"github.com/iancoleman/strcase"
+	"github.com/mafei198/glib/misc"
 	"strings"
 )
 
@@ -31,7 +31,7 @@ func Get{Name}() *{Name} {
 func GenGlobalFile(packageName, structName, structDefine string) string {
 	args := []string{
 		"{Package}", packageName,
-		"{LowerName}", strcase.ToLowerCamel(structName),
+		"{LowerName}", misc.ToLowerCamel(structName),
 		"{Name}", structName,
 		"{Struct}", structDefine,
 	}

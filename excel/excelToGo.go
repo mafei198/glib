@@ -2,7 +2,6 @@ package excel
 
 import (
 	"fmt"
-	"github.com/iancoleman/strcase"
 	"github.com/mafei198/glib/misc"
 	"github.com/tealeg/xlsx"
 	"github.com/tidwall/pretty"
@@ -31,8 +30,6 @@ type SheetObject struct {
 	FieldNames []string
 	FieldTypes []string
 	Sheet      *xlsx.Sheet
-
-	KeyType string
 
 	IsSub    bool
 	IsGlobal bool
@@ -79,7 +76,6 @@ func (e *ExcelToGo) Export() error {
 				continue
 			}
 			if object := e.parseSheetToStruct(sheet); object != nil {
-				object.KeyType = e.parseBaseType(object.FieldTypes[0])
 				e.Structs = append(e.Structs, object)
 				if jsonContent := e.parseToJson(sheet); jsonContent != "" {
 					prettyJson := pretty.Pretty([]byte(jsonContent))
@@ -111,7 +107,7 @@ func (e *ExcelToGo) isGlobal(sheetName string) bool {
 
 func (e *ExcelToGo) parseGlobalSheet(sheet *xlsx.Sheet) *SheetObject {
 	parts := strings.Split(sheet.Name, "|")
-	structName := strcase.ToCamel(parts[len(parts)-1])
+	structName := misc.ToCamel(parts[len(parts)-1])
 	fieldNames := make([]string, 0)
 	fieldTypes := make([]string, 0)
 	for i, row := range sheet.Rows {
@@ -147,7 +143,7 @@ func (e *ExcelToGo) parseNormalSheet(sheet *xlsx.Sheet) *SheetObject {
 	nameRow := sheet.Rows[RowName]
 	signRow := sheet.Rows[RowExportSign]
 	parts := strings.Split(sheet.Name, "|")
-	structName := strcase.ToCamel(parts[len(parts)-1])
+	structName := misc.ToCamel(parts[len(parts)-1])
 	fieldNames := make([]string, 0)
 	fieldTypes := make([]string, 0)
 	for i := 0; i < len(typeRow.Cells); i++ {
@@ -178,7 +174,7 @@ func (e *ExcelToGo) parseNormalSheet(sheet *xlsx.Sheet) *SheetObject {
 }
 
 func (e *ExcelToGo) structWithName(name, content string) string {
-	return "type " + strcase.ToCamel(name) + " " + content
+	return "type " + misc.ToCamel(name) + " " + content
 }
 
 func (e *ExcelToGo) genStruct(fieldNames, fieldTypes []string) string {
@@ -186,8 +182,8 @@ func (e *ExcelToGo) genStruct(fieldNames, fieldTypes []string) string {
 	for i := 0; i < len(fieldNames); i++ {
 		fieldName := fieldNames[i]
 		fieldType := e.typeToDefine(fieldTypes[i])
-		tag := " `json:\"" + strcase.ToSnake(fieldName) + "\"`"
-		st += "    " + strcase.ToCamel(fieldName) + " " + fieldType + tag + "\n"
+		tag := " `json:\"" + fieldName + "\"`"
+		st += "    " + misc.ToCamel(fieldName) + " " + fieldType + tag + "\n"
 	}
 	st += "}"
 	return st
@@ -235,7 +231,7 @@ func (e *ExcelToGo) parseNamedObject(name string) string {
 			IsSub:      true,
 		}
 		e.Structs = append(e.Structs, object)
-		return "*" + strcase.ToCamel(objName)
+		return "*" + misc.ToCamel(objName)
 	}
 	return ""
 }
@@ -365,7 +361,7 @@ func (e *ExcelToGo) parseRecord(fieldNames, fieldTypes, values []string) string 
 
 func (e *ExcelToGo) parseJsonKV(fieldName, fieldType, value string) string {
 	jsonValue := e.parseJsonValue(fieldType, value)
-	return fmt.Sprintf("\"%s\": %s", strcase.ToSnake(fieldName), jsonValue)
+	return fmt.Sprintf("\"%s\": %s", fieldName, jsonValue)
 }
 
 func (e *ExcelToGo) parseJsonValue(fieldType string, value string) string {
@@ -443,6 +439,6 @@ func (e *ExcelToGo) isObject(fieldType string) bool {
 
 func (e *ExcelToGo) GetStructName(sheet *xlsx.Sheet) string {
 	parts := strings.Split(sheet.Name, "|")
-	structName := strcase.ToCamel(parts[len(parts)-1])
+	structName := misc.ToCamel(parts[len(parts)-1])
 	return structName
 }

@@ -41,7 +41,7 @@ func ExportGoAndJSON(excelDir, exportSign, jsonExportPath, goExportPath, goPacka
 			if s.IsGlobal {
 				content = tpls.GenGlobalFile(goPackage, s.Name, s.Define)
 			} else {
-				content = tpls.GenConfigFile(goPackage, s.Name, s.Define, s.KeyType)
+				content = tpls.GenConfigFile(goPackage, s.Name, s.Define)
 			}
 			err := ioutil.WriteFile(goExportPath+s.Name+".go", []byte(content), 0644)
 			if err != nil {
