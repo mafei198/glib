@@ -78,7 +78,7 @@ func toProperCase(str string) string {
 		} else if len(frag) == 1 {
 			return strings.ToUpper(frag)
 		} else {
-			return strings.ToUpper(frag[0:1]) + strings.ToLower(frag[1:len(frag)-1])
+			return strings.ToUpper(frag[0:1]) + strings.ToLower(frag[1:])
 		}
 	})
 	return bigWordExp.ReplaceAllStringFunc(str, func(frag string) string {
