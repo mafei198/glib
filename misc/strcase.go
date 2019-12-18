@@ -73,6 +73,7 @@ var bigWordExp = regexp.MustCompile("([A-Z])([a-z]+)")
 
 func toProperCase(str string) string {
 	str = wordExp.ReplaceAllStringFunc(str, func(frag string) string {
+		frag = strings.Replace(frag, "_", "", -1)
 		if _, ok := commonInitialisms[strings.ToUpper(frag)]; ok {
 			return strings.ToUpper(frag)
 		} else if len(frag) == 1 {
