@@ -29,7 +29,7 @@ func init() {
 func (c *{ContainerName}) load(content string) {
 	_ = json.Unmarshal([]byte(content), &c.list)
 	for i := 0; i < len(c.list); i++ {
-		c.index[c.list[int32(i)].Id] = int32(i)
+		c.index[c.list[int32(i)].ID] = int32(i)
 	}
 }
 
@@ -56,7 +56,7 @@ func GenConfigFile(packageName, structName, structDefine string) string {
 	if sub == "" {
 		panic("config structure invalid: " + structDefine)
 	}
-	keyType := strings.Split(sub, " ")[1]
+	keyType := strings.Split(sub, " ")[2]
 	args := []string{
 		"{Package}", packageName,
 		"{ContainerName}", misc.ToLowerCamel(structName),

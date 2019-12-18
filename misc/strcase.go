@@ -12,7 +12,7 @@ func ToLowerCamel(str string) string {
 	case 1:
 		return strings.ToLower(str)
 	default:
-		return strings.ToLower(str[0:1]) + str[1:len(str)-1]
+		return strings.ToLower(str[0:1]) + str[1:]
 	}
 }
 
@@ -54,7 +54,7 @@ func ToCamel(str string) string {
 		str = "Num" + str
 	}
 	if singleNumExp.MatchString(str[0:1]) {
-		str = numbers[str[0:1]] + str[1:len(str)-1]
+		str = numbers[str[0:1]] + str[1:]
 	}
 	upcase := toProperCase(str)
 	return noneWordExp.ReplaceAllString(upcase, "")

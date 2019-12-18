@@ -12,7 +12,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = excel.CreateMergeJSON("./gen/json_files", "./gen/configData.json.gz", true)
+	err = excel.CreateMergeJSON("./example/gen/json_files", "./example/gen/configData.json.gz", true)
 	if err != nil {
 		panic(err)
 	}
