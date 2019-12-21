@@ -38,28 +38,44 @@ type SheetObject struct {
 	Json   string
 }
 
+type Options struct {
+	ArraySep        string
+	StructValuesSep string
+}
+
 var (
 	listPattern   = regexp.MustCompile(".+(\\[])$")
 	structPattern = regexp.MustCompile("^{.+}$")
 	namedPattern  = regexp.MustCompile("[a-zA-Z0-9]+{.+}$")
 )
 
-func Export(dir string, sign ...string) ([]*SheetObject, error) {
-	exporter := New(dir, sign...)
+var (
+	arraySep        = ","
+	structValuesSep = ":"
+)
+
+func Export(dir string, sign string, options ...*Options) ([]*SheetObject, error) {
+	if len(options) > 0 {
+		if options[0].ArraySep != "" {
+			arraySep = options[0].ArraySep
+		}
+		if options[0].StructValuesSep != "" {
+			structValuesSep = options[0].StructValuesSep
+		}
+	}
+	exporter := New(dir, sign)
 	if err := exporter.Export(); err != nil {
 		return nil, err
 	}
 	return exporter.Structs, nil
 }
 
-func New(dir string, sign ...string) *ExcelToGo {
+func New(dir string, sign string) *ExcelToGo {
 	ins := &ExcelToGo{
 		Dir:     dir,
 		Structs: []*SheetObject{},
 	}
-	if len(sign) > 0 {
-		ins.Sign = sign[0]
-	}
+	ins.Sign = sign
 	return ins
 }
 
@@ -369,18 +385,18 @@ func (e *ExcelToGo) parseJsonValue(fieldType string, value string) string {
 	}
 	if structPattern.MatchString(fieldType) {
 		fieldNames, fieldTypes := e.anonymousObjectDefines(fieldType)
-		return e.parseRecord(fieldNames, fieldTypes, strings.Split(value, ":"))
+		return e.parseRecord(fieldNames, fieldTypes, strings.Split(value, structValuesSep))
 	}
 	if namedPattern.MatchString(fieldType) {
 		parts := strings.Split(fieldType, "{")
 		fType := strings.TrimPrefix(fieldType, parts[0])
 		fieldNames, fieldTypes := e.anonymousObjectDefines(fType)
-		return e.parseRecord(fieldNames, fieldTypes, strings.Split(value, ":"))
+		return e.parseRecord(fieldNames, fieldTypes, strings.Split(value, structValuesSep))
 	}
 	if e.isList(fieldType) {
 		parts := strings.Split(fieldType, "[]")
 		values := make([]string, 0)
-		for _, v := range strings.Split(strings.Trim(value, "[]"), ",") {
+		for _, v := range strings.Split(strings.Trim(value, "[]"), arraySep) {
 			values = append(values, e.parseJsonValue(parts[0], v))
 		}
 		return "[" + strings.Join(values, ",") + "]"

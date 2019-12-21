@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func ExportGoAndJSON(excelDir, exportSign, jsonExportPath, goExportPath, goPackage string) error {
+func ExportGoAndJSON(excelDir, exportSign, jsonExportPath, goExportPath, goPackage string, options ...*Options) error {
 	if err := os.MkdirAll(goExportPath, os.ModePerm); err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func ExportGoAndJSON(excelDir, exportSign, jsonExportPath, goExportPath, goPacka
 		goExportPath += "/"
 	}
 
-	sheetObjects, err := Export(excelDir, exportSign)
+	sheetObjects, err := Export(excelDir, exportSign, options...)
 
 	if err != nil {
 		panic(err)
