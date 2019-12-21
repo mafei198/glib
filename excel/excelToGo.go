@@ -6,6 +6,7 @@ import (
 	"github.com/tealeg/xlsx"
 	"github.com/tidwall/pretty"
 	"regexp"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
@@ -21,8 +22,11 @@ type ExcelToGo struct {
 	Sign    string
 	Structs []*SheetObject
 
-	processFile  string
-	processSheet string
+	processFile    string
+	processSheet   string
+	processCol     int
+	processRow     int
+	processContent string
 }
 
 type SheetObject struct {
@@ -80,6 +84,19 @@ func New(dir string, sign string) *ExcelToGo {
 }
 
 func (e *ExcelToGo) Export() error {
+	defer func() {
+		if x := recover(); x != nil {
+			stack := string(debug.Stack())
+			str1 := fmt.Sprintf("File: %s Sheet: %s", e.processFile, e.processSheet)
+			if e.processRow >= 0 && e.processCol >= 0 {
+				str1 += fmt.Sprintf("\nRow: %d, Col: %d", e.processRow, e.processCol)
+			}
+			if e.processContent != "" {
+				str1 += fmt.Sprintf("\nContent: %s", e.processContent)
+			}
+			fmt.Printf("%s\nPanic: %v\nStack: %s", str1, x, stack)
+		}
+	}()
 	return misc.GetAllFiles(e.Dir, ".xlsx", func(filename string) error {
 		e.processFile = filename
 		file, err := xlsx.OpenFile(filename)
@@ -93,6 +110,9 @@ func (e *ExcelToGo) Export() error {
 			}
 			if object := e.parseSheetToStruct(sheet); object != nil {
 				e.Structs = append(e.Structs, object)
+				e.processRow = -1
+				e.processCol = -1
+				e.processContent = ""
 				if jsonContent := e.parseToJson(sheet); jsonContent != "" {
 					prettyJson := pretty.Pretty([]byte(jsonContent))
 					object.Json = string(prettyJson)
@@ -126,13 +146,13 @@ func (e *ExcelToGo) parseGlobalSheet(sheet *xlsx.Sheet) *SheetObject {
 	structName := misc.ToCamel(parts[len(parts)-1])
 	fieldNames := make([]string, 0)
 	fieldTypes := make([]string, 0)
-	for i, row := range sheet.Rows {
+	for i := range sheet.Rows {
 		if i == 0 {
 			continue
 		}
-		fieldName := row.Cells[0].String()
-		fieldType := row.Cells[2].String()
-		sign := row.Cells[3].String()
+		fieldName := e.GetCell(sheet, i, 0).String()
+		fieldType := e.GetCell(sheet, i, 2).String()
+		sign := e.GetCell(sheet, i, 3).String()
 		if e.Sign != "" && !strings.Contains(sign, e.Sign) {
 			continue
 		}
@@ -156,15 +176,13 @@ func (e *ExcelToGo) parseGlobalSheet(sheet *xlsx.Sheet) *SheetObject {
 
 func (e *ExcelToGo) parseNormalSheet(sheet *xlsx.Sheet) *SheetObject {
 	typeRow := sheet.Rows[RowType]
-	nameRow := sheet.Rows[RowName]
-	signRow := sheet.Rows[RowExportSign]
 	structName := e.GetStructName(sheet)
 	fieldNames := make([]string, 0)
 	fieldTypes := make([]string, 0)
 	for i := 0; i < len(typeRow.Cells); i++ {
-		fieldName := nameRow.Cells[i].String()
-		fieldType := typeRow.Cells[i].String()
-		sign := signRow.Cells[i].String()
+		fieldName := e.GetCell(sheet, RowName, i).String()
+		fieldType := e.GetCell(sheet, RowType, i).String()
+		sign := e.GetCell(sheet, RowExportSign, i).String()
 		if fieldName == "" || fieldType == "" {
 			continue
 		}
@@ -360,6 +378,9 @@ func (e *ExcelToGo) parseRecord(fieldNames, fieldTypes, values []string) string 
 	for i := 0; i < len(fieldNames); i++ {
 		fieldName := fieldNames[i]
 		fieldType := fieldTypes[i]
+		if len(values) <= i {
+			break
+		}
 		value := values[i]
 		if i == 0 && value == "#" {
 			continue
@@ -375,6 +396,7 @@ func (e *ExcelToGo) parseRecord(fieldNames, fieldTypes, values []string) string 
 }
 
 func (e *ExcelToGo) parseJsonKV(fieldName, fieldType, value string) string {
+	e.processContent = fmt.Sprintf("FieldName: %s, FieldType: %s, Value: %s", fieldName, fieldType, value)
 	jsonValue := e.parseJsonValue(fieldType, value)
 	return fmt.Sprintf("\"%s\": %s", fieldName, jsonValue)
 }
@@ -456,4 +478,12 @@ func (e *ExcelToGo) GetStructName(sheet *xlsx.Sheet) string {
 	parts := strings.Split(sheet.Name, "|")
 	structName := misc.ToCamel(parts[len(parts)-1])
 	return structName + "s"
+}
+
+func (e *ExcelToGo) GetCell(sheet *xlsx.Sheet, row, col int) *xlsx.Cell {
+	e.processRow = row
+	e.processCol = col
+	cell := sheet.Cell(row, col)
+	e.processContent = cell.String()
+	return cell
 }
