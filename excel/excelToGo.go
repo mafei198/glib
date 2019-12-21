@@ -43,8 +43,9 @@ type SheetObject struct {
 }
 
 type Options struct {
-	ArraySep        string
-	StructValuesSep string
+	ArraySep         string
+	StructValuesSep  string
+	DisablePlurality bool
 }
 
 var (
@@ -56,15 +57,20 @@ var (
 var (
 	arraySep        = ","
 	structValuesSep = ":"
+	plurality       = true
 )
 
 func Export(dir string, sign string, options ...*Options) ([]*SheetObject, error) {
 	if len(options) > 0 {
-		if options[0].ArraySep != "" {
-			arraySep = options[0].ArraySep
+		option := options[0]
+		if option.ArraySep != "" {
+			arraySep = option.ArraySep
 		}
-		if options[0].StructValuesSep != "" {
-			structValuesSep = options[0].StructValuesSep
+		if option.StructValuesSep != "" {
+			structValuesSep = option.StructValuesSep
+		}
+		if option.DisablePlurality {
+			plurality = false
 		}
 	}
 	exporter := New(dir, sign)
@@ -477,7 +483,11 @@ func (e *ExcelToGo) isObject(fieldType string) bool {
 func (e *ExcelToGo) GetStructName(sheet *xlsx.Sheet) string {
 	parts := strings.Split(sheet.Name, "|")
 	structName := misc.ToCamel(parts[len(parts)-1])
-	return structName + "s"
+	if plurality {
+		return structName + "s"
+	} else {
+		return structName
+	}
 }
 
 func (e *ExcelToGo) GetCell(sheet *xlsx.Sheet, row, col int) *xlsx.Cell {
