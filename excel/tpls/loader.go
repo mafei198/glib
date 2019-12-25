@@ -20,7 +20,9 @@ func LoadConfigs(data map[string]string) {
 	defer rwlock.Unlock()
 
 	for key, content := range data {
-		loaders[key](content)
+		if loader, ok := loaders[key]; ok {
+			loader(content)
+		}
 	}
 }`
 
