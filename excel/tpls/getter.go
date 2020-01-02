@@ -11,6 +11,7 @@ const getterTpl = `package {Package}
 import (
 	"fmt"
 	"encoding/json"
+	"github.com/mafei198/glib/logger"
 )
 
 {Struct}
@@ -27,7 +28,10 @@ func init() {
 }
 
 func (c *{ContainerName}) load(content string) {
-	_ = json.Unmarshal([]byte(content), &c.list)
+	err := json.Unmarshal([]byte(content), &c.list)
+	if err != nil {
+	    logger.ERR("load config {ContainerName} failed: ", err)
+	}
 	for i := 0; i < len(c.list); i++ {
 		c.index[c.list[int32(i)].ID] = int32(i)
 	}
