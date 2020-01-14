@@ -76,6 +76,15 @@ func Decode(data []byte) (interface{}, error) {
 	return msg, proto.Unmarshal(buffer.RemainData(), msg)
 }
 
+func DecodeWithOut(data []byte, out proto.Message) error {
+	buffer := packet.Reader(data)
+	_, err := buffer.ReadString()
+	if err != nil {
+		return err
+	}
+	return proto.Unmarshal(buffer.RemainData(), out)
+}
+
 func GetType(msg interface{}) string {
 	if t := reflect.TypeOf(msg); t.Kind() == reflect.Ptr {
 		return t.Elem().Name()
