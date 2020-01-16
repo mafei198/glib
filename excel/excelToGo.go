@@ -186,8 +186,8 @@ func (e *ExcelToGo) parseNormalSheet(sheet *xlsx.Sheet) *SheetObject {
 	fieldNames := make([]string, 0)
 	fieldTypes := make([]string, 0)
 	for i := 0; i < len(typeRow.Cells); i++ {
-		fieldName := e.GetCell(sheet, RowName, i).String()
-		fieldType := e.GetCell(sheet, RowType, i).String()
+		fieldName := strings.TrimSpace(e.GetCell(sheet, RowName, i).String())
+		fieldType := strings.TrimSpace(e.GetCell(sheet, RowType, i).String())
 		sign := e.GetCell(sheet, RowExportSign, i).String()
 		if fieldName == "" || fieldType == "" {
 			continue
