@@ -156,8 +156,8 @@ func (e *ExcelToGo) parseGlobalSheet(sheet *xlsx.Sheet) *SheetObject {
 		if i == 0 {
 			continue
 		}
-		fieldName := e.GetCell(sheet, i, 0).String()
-		fieldType := e.GetCell(sheet, i, 2).String()
+		fieldName := strings.TrimSpace(e.GetCell(sheet, i, 0).String())
+		fieldType := strings.TrimSpace(e.GetCell(sheet, i, 2).String())
 		sign := e.GetCell(sheet, i, 3).String()
 		if e.Sign != "" && !strings.Contains(sign, e.Sign) {
 			continue
@@ -353,8 +353,8 @@ func (e *ExcelToGo) parseNormalJson(sheet *xlsx.Sheet) string {
 		fieldTypes := make([]string, 0)
 		values := make([]string, 0)
 		for i := 0; i < len(typeRow.Cells) && i < len(nameRow.Cells) && i < len(row.Cells); i++ {
-			fieldName := nameRow.Cells[i].String()
-			fieldType := typeRow.Cells[i].String()
+			fieldName := strings.TrimSpace(nameRow.Cells[i].String())
+			fieldType := strings.TrimSpace(typeRow.Cells[i].String())
 			sign := signRow.Cells[i].String()
 			value := row.Cells[i].String()
 			if fieldName == "" || fieldType == "" || value == "" {
