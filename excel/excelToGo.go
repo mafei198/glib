@@ -437,13 +437,14 @@ func (e *ExcelToGo) parseBaseValue(fieldType string, value string) string {
 	switch fieldType {
 	case "string":
 		strValue := strings.TrimSuffix(value, ".0")
-		strValue = strings.ReplaceAll(strValue, "\n", "\\n")
+		strValue = strconv.Quote(strValue)
 		return fmt.Sprintf("\"%s\"", strValue)
 	case "int", "int32", "int64":
 		if value == "" {
 			return "0"
 		}
-		intValue, err := strconv.Atoi(value)
+		floatValue, err := strconv.ParseFloat(value, 64)
+		intValue := int(floatValue)
 		if err != nil {
 			panic(err)
 		}
