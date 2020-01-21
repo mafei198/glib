@@ -437,8 +437,7 @@ func (e *ExcelToGo) parseBaseValue(fieldType string, value string) string {
 	switch fieldType {
 	case "string":
 		strValue := strings.TrimSuffix(value, ".0")
-		strValue = strconv.Quote(strValue)
-		return fmt.Sprintf("\"%s\"", strValue)
+		return strconv.Quote(strValue)
 	case "int", "int32", "int64":
 		if value == "" {
 			return "0"
