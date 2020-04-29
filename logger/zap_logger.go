@@ -25,8 +25,10 @@ func StartZap() {
 		Compress:   false,               // disabled by default
 	}
 	writer := zapcore.AddSync(hook)
+	conf := zap.NewProductionEncoderConfig()
+	conf.EncodeTime = zapcore.ISO8601TimeEncoder
 	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), writer, zap.DebugLevel)
+		zapcore.NewJSONEncoder(conf), writer, zap.DebugLevel)
 	logger := zap.New(core)
 	sugarLogger = logger.Sugar()
 }
