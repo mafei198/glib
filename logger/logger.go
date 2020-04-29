@@ -26,66 +26,161 @@ package logger
 import (
 	"fmt"
 	"log"
-	"strings"
+	"sync/atomic"
 )
 
-var (
-	_debug_open bool
-)
+var logLevel int32 = LL_DEBUG
+var logDriver int32 = LD_DEFAULT
 
-var logLevel int32 = LL_INFO
+const (
+	LD_DEFAULT = iota
+	LD_ZAP
+)
 
 const (
 	LL_DEBUG = iota
-	LL_NOTICE
 	LL_INFO
 	LL_WARNING
 	LL_ERROR
 )
 
-func SetLevel(level int32) {
-	logLevel = level
+func SetLogger(ld int32) {
+	logDriver = ld
+	switch ld {
+	case LD_DEFAULT:
+		Start()
+	case LD_ZAP:
+		StartZap()
+	}
+}
+
+func SetLevel(level string) {
+	switch level {
+	case "DEBUG":
+		logLevel = LL_DEBUG
+	case "INFO":
+		logLevel = LL_INFO
+	case "WARNING":
+		logLevel = LL_WARNING
+	case "ERROR":
+		logLevel = LL_ERROR
+	default:
+		println("invalid log level: ", level)
+	}
 }
 
 func ERR(v ...interface{}) {
-	err := strings.TrimRight(fmt.Sprintln(v...), "\n")
-	log.Printf("\033[1;4;31m[ERROR] %v \033[0m\n", err)
+	/*
+		event := sentry.NewEvent()
+		event.Level = sentry.LevelError
+		event.Message = strings.TrimRight(fmt.Sprintln(v...), "\n")
+		sentry.CaptureEvent(event)
+	*/
+	switch logDriver {
+	case LD_ZAP:
+		sugarLogger.Error(v...)
+	default:
+		add(formatErr(v...))
+	}
 }
 
 func ERRDirect(v ...interface{}) {
-	log.Printf("\033[1;4;31m[ERROR] %v \033[0m\n", strings.TrimRight(fmt.Sprintln(v...), "\n"))
+	add(formatErr(v...))
 }
 
 func WARN(v ...interface{}) {
 	if logLevel > LL_WARNING {
 		return
 	}
-	log.Printf("\033[1;33m[WARN] %v \033[0m\n", strings.TrimRight(fmt.Sprintln(v...), "\n"))
+	switch logDriver {
+	case LD_ZAP:
+		sugarLogger.Warn(v...)
+	default:
+		add(formatWarn(v...))
+	}
 }
 
 func INFO(v ...interface{}) {
 	if logLevel > LL_INFO {
 		return
 	}
-	log.Printf("\033[32m[INFO] %v \033[0m\n", strings.TrimRight(fmt.Sprintln(v...), "\n"))
-}
-
-func NOTICE(v ...interface{}) {
-	if logLevel > LL_NOTICE {
-		return
+	switch logDriver {
+	case LD_ZAP:
+		sugarLogger.Info(v...)
+	default:
+		add(formatInfo(v...))
 	}
-	log.Printf("[NOTICE] %v\n", strings.TrimRight(fmt.Sprintln(v...), "\n"))
 }
 
 func DEBUG(v ...interface{}) {
 	if logLevel > LL_DEBUG {
 		return
 	}
-	if _debug_open {
-		log.Printf("\033[1;35m[DEBUG] %v \033[0m\n", strings.TrimRight(fmt.Sprintln(v...), "\n"))
+	switch logDriver {
+	case LD_ZAP:
+		sugarLogger.Debug(v...)
+	default:
+		add(formatDebug(v...))
 	}
 }
 
-func format(v ...interface{}) string {
-	return fmt.Sprintf("%v \033[0m\n", strings.TrimRight(fmt.Sprintln(v...), "\n"))
+var msgQueue chan string
+var dropped int32 = 0
+
+const bufferLen = 1024
+
+func Start() {
+	msgQueue = make(chan string, bufferLen)
+	go worker()
+}
+
+func Stop() {
+	if logDriver == LD_ZAP {
+		_ = sugarLogger.Sync()
+	}
+}
+
+func add(msg string) {
+	if msgQueue == nil {
+		log.Print(msg)
+		return
+	}
+	if len(msgQueue) >= bufferLen {
+		atomic.AddInt32(&dropped, 1)
+		return
+	}
+	if dropped > 0 {
+		println("dropped: ", dropped)
+		dropped = 0
+	}
+	msgQueue <- msg
+}
+
+func worker() {
+	for msg := range msgQueue {
+		log.Print(msg)
+	}
+}
+
+const (
+	debugFormator = "\033[1;35m[DEBUG] %v \033[0m\n"
+	infoFormator  = "\033[32m[INFO] %v \033[0m\n"
+	warnFormator  = "\033[1;33m[WARN] %v \033[0m\n"
+	errorFormator = "\033[1;4;31m[ERROR] %v \033[0m\n"
+)
+
+func formatDebug(v ...interface{}) string {
+	return fmt.Sprintf(debugFormator, fmt.Sprint(v...))
+}
+
+func formatInfo(v ...interface{}) string {
+	return fmt.Sprintf(infoFormator, fmt.Sprint(v...))
+}
+
+func formatWarn(v ...interface{}) string {
+	return fmt.Sprintf(warnFormator, fmt.Sprint(v...))
+}
+
+func formatErr(v ...interface{}) string {
+	return fmt.Sprintf(errorFormator, fmt.Sprintln(v...))
 }
