@@ -27,8 +27,9 @@ func StartZap() {
 	writer := zapcore.AddSync(hook)
 	conf := zap.NewProductionEncoderConfig()
 	conf.EncodeTime = zapcore.ISO8601TimeEncoder
+	conf.EncodeLevel = zapcore.CapitalLevelEncoder
 	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(conf), writer, zap.DebugLevel)
+		zapcore.NewConsoleEncoder(conf), writer, zap.InfoLevel)
 	logger := zap.New(core)
 	sugarLogger = logger.Sugar()
 }
