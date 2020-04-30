@@ -30,6 +30,6 @@ func StartZap() {
 	conf.EncodeLevel = zapcore.CapitalLevelEncoder
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(conf), writer, zap.InfoLevel)
-	logger := zap.New(core)
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	sugarLogger = logger.Sugar()
 }
