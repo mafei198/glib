@@ -45,7 +45,7 @@ func genPbMsg(msg string) string {
 
 func parseMessages(data []byte) []string {
 	messages := make([]string, 0)
-	exp := regexp.MustCompile("message[\\s]+[a-zA-Z0-9_]+[\\s]+{")
+	exp := regexp.MustCompile("message[\\s]+[a-zA-Z0-9_]+[\\s]*{")
 	content := string(data)
 	codes := exp.FindAllString(content, -1)
 	for _, code := range codes {
